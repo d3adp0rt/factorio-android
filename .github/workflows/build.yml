@@ -22,20 +22,22 @@ jobs:
       - name: install build tools
         run: |
           # a partial upgrade breaks pacman inside the container, so upgrade first
-          pacman -Syu --noconfirm --needed zstd curl tar
+          pacman -Syu --noconfirm --needed zstd curl tar binutils
 
       - name: cache rootfs
         id: cache
         uses: actions/cache@v4
         with:
           path: .work/rootfs.tar.zst
-          key: rootfs-v2-${{ hashFiles('tools/build-rootfs.sh', 'tools/prune-rootfs.sh', 'tools/pacman-aarch64.conf', 'rootfs/opt/factorio/run.sh') }}
+          key: rootfs-v3-${{ hashFiles('tools/build-rootfs.sh', 'tools/prune-rootfs.sh', 'tools/pacman-aarch64.conf', 'rootfs/opt/factorio/run.sh') }}
 
       - name: build the Linux environment
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           WITH_GAME=0 WORK=$PWD/.work bash tools/build-rootfs.sh
           bash tools/prune-rootfs.sh $PWD/.work/rootfs
+          # a library that is only needed indirectly can silently break Mesa, so check it
+          ./tools/check-rootfs-deps.py .work/rootfs
           # build-rootfs.sh tars before pruning, so pack the pruned tree again
           rm -f .work/rootfs.tar
           tar --sort=name --numeric-owner --owner=0 --group=0 -C .work/rootfs -cf .work/rootfs.tar .

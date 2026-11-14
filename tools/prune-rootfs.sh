@@ -6,7 +6,7 @@ R="${1:?usage: prune-rootfs.sh <rootfs>}"
 
 rm -rf "$R/usr/lib/firmware" "$R/usr/lib/modules" "$R/usr/lib/systemd" "$R/usr/lib/udev" \
        "$R/usr/lib/security" "$R/usr/lib/xtables" "$R/usr/lib/libteflon.so" \
-       "$R/usr/lib/libicudata.so"* "$R/usr/lib/pacman" \
+       "$R/usr/lib/pacman" \
        "$R/usr/share/vim" "$R/usr/share/gir-1.0" "$R/usr/share/i18n" "$R/usr/share/file" \
        "$R/usr/share/hwdata" "$R/usr/share/licenses" "$R/usr/share/terminfo" \
        "$R/usr/share/perl5" "$R/usr/lib/perl5" "$R/usr/share/nano" "$R/usr/share/awk" \
@@ -18,8 +18,9 @@ rm -rf "$R/usr/lib/firmware" "$R/usr/lib/modules" "$R/usr/lib/systemd" "$R/usr/l
        "$R/usr/lib/libnss_systemd.so"* "$R/usr/share/kbd" \
        "$R/usr/share/iana-etc" "$R/usr/share/gettext" "$R/usr/share/pacman" 2>/dev/null || true
 
-# NOTE: libicu* must stay: libLLVM -> libxml2 -> libicuuc, and without LLVM llvmpipe
-# (the software OpenGL driver) cannot be loaded at all.
+# NOTE: libicu* must stay (libicudata included!): libLLVM -> libxml2 -> libicuuc -> libicudata.
+# Without libicudata the *whole* Mesa gallium driver fails to load, so both llvmpipe (CPU mode)
+# and virpipe (GPU mode) die - the game then reports "Couldn't find matching GLX visual".
 
 # keep only a handful of userland tools (note: /usr/sbin is a symlink to bin, never clean it separately!)
 KEEP="bash sh ls cat cp mv rm mkdir rmdir ln echo printf sleep ps kill grep sed gawk awk env id
