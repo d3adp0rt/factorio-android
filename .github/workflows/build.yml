@@ -22,7 +22,7 @@ jobs:
       - name: install build tools
         run: |
           # a partial upgrade breaks pacman inside the container, so upgrade first
-          pacman -Syu --noconfirm --needed zstd curl tar binutils
+          pacman -Syu --noconfirm --needed zstd curl tar binutils python
 
       - name: cache rootfs
         id: cache
