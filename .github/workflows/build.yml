@@ -29,13 +29,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .work/rootfs.tar.zst
-          key: rootfs-${{ hashFiles('tools/build-rootfs.sh', 'tools/prune-rootfs.sh', 'tools/pacman-aarch64.conf', 'rootfs/opt/factorio/run.sh') }}
+          key: rootfs-v2-${{ hashFiles('tools/build-rootfs.sh', 'tools/prune-rootfs.sh', 'tools/pacman-aarch64.conf', 'rootfs/opt/factorio/run.sh') }}
 
       - name: build the Linux environment
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           WITH_GAME=0 WORK=$PWD/.work bash tools/build-rootfs.sh
           bash tools/prune-rootfs.sh $PWD/.work/rootfs
+          # build-rootfs.sh tars before pruning, so pack the pruned tree again
+          rm -f .work/rootfs.tar
+          tar --sort=name --numeric-owner --owner=0 --group=0 -C .work/rootfs -cf .work/rootfs.tar .
           zstd -q -T0 -12 -f .work/rootfs.tar -o .work/rootfs.tar.zst
           rm -f .work/rootfs.tar
 
