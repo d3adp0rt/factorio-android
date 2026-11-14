@@ -19,7 +19,6 @@ app/src/main/assets/overlay.tar.zst
 *.tar.bz2
 factorio/
 factorio_linux*/
-rootfs/
 
 # --- generated / downloaded helpers ----------------------------------------
 tools/termux-root/
