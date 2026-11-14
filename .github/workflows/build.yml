@@ -84,7 +84,7 @@ jobs:
           VIRGL_BUILD=$PWD/.virgl/vr-build EPOXY_BUILD=$PWD/.virgl/andeps \
             PATCHELF=patchelf bash tools/stage-assets.sh
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: rootfs
           path: app/src/main/assets
