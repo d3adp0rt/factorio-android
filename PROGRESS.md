@@ -28,10 +28,13 @@
 > * `SETUP_VERSION` = 16. Для центрирования окна нужен свежий образ (wipe в настройках),
 >   иначе в старой распаковке нет `xdotool`.
 >
-> **Репозиторий:** `git init` в `factorio-android/`, 118 файлов, 3.5 МБ, игра и APK в
-> `.gitignore`. CI `.github/workflows/build.yml`: job `rootfs` (Arch-контейнер, кеш по хешу
-> скриптов) → job `apk` (NDK 29, meson-сборка virglrenderer, оба APK) → на тег `v*`
-> публикация релиза с описанием. Пуш ждёт `gh auth login`.
+> **Репозиторий:** https://github.com/d3adp0rt/factorio-android (public, GPLv3, ветка `main`).
+> Игра и APK в `.gitignore`; в репозитории только исходники (5.1k файлов). Подмодули
+> termux-x11 (`xserver`, `libx11`, `pixman`, …) **вендорены как обычные файлы** — у них были
+> локальные патчи, без которых дерево не собирается, а `.gitmodules` указывал на старые пути.
+> CI `.github/workflows/build.yml`: job `rootfs` (Arch-контейнер, `pacman -Syu`, кеш по хешу
+> скриптов) → job `apk` (NDK из `lorie/version.gradle`, meson-сборка virglrenderer, оба APK)
+> → на тег `v*` публикация релиза с описанием. Локальная сборка 0.4.0 проверена.
 
 Последнее обновление: 14.11.2026 — **APK**: `FactorioAndroid-0.3.1-arm64.apk` (1.58 ГБ) и
 **`FactorioAndroid-0.3.1-dev.apk` (33 МБ)** — dev-сборка без rootfs в ассетах: она берёт архив
