@@ -37,7 +37,7 @@ jobs:
           zstd -q -T0 -12 -f .work/rootfs.tar -o .work/rootfs.tar.zst
           rm -f .work/rootfs.tar
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: rootfs
           path: .work/rootfs.tar.zst
@@ -100,7 +100,7 @@ jobs:
           mv /tmp/rootfs-hold.zst app/src/main/assets/rootfs.tar.zst
           cp app/build/outputs/apk/release/app-release.apk "FactorioAndroid-${GITHUB_REF_NAME#v}-dev.apk"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: apks
           path: FactorioAndroid-*.apk
