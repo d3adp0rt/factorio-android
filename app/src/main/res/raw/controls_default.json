@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "buttons": [
+    {"id": "pad_w", "label": "W", "x": 0.075, "y": 0.58, "w": 0.075, "h": 0.14, "action": "key", "key": "W", "hold": true},
+    {"id": "pad_a", "label": "A", "x": 0.000, "y": 0.74, "w": 0.075, "h": 0.14, "action": "key", "key": "A", "hold": true},
+    {"id": "pad_s", "label": "S", "x": 0.075, "y": 0.74, "w": 0.075, "h": 0.14, "action": "key", "key": "S", "hold": true},
+    {"id": "pad_d", "label": "D", "x": 0.150, "y": 0.74, "w": 0.075, "h": 0.14, "action": "key", "key": "D", "hold": true},
+
+    {"id": "lmb", "label": "LMB", "x": 0.900, "y": 0.70, "w": 0.095, "h": 0.24, "action": "mouse", "button": "left", "hold": true},
+    {"id": "rmb", "label": "RMB", "x": 0.800, "y": 0.70, "w": 0.085, "h": 0.15, "action": "mouse", "button": "right"},
+    {"id": "wheel_up", "label": "▲", "x": 0.800, "y": 0.52, "w": 0.085, "h": 0.13, "action": "wheel", "delta": -1},
+    {"id": "wheel_down", "label": "▼", "x": 0.800, "y": 0.87, "w": 0.085, "h": 0.12, "action": "wheel", "delta": 1},
+
+    {"id": "shift", "label": "SHFT", "x": 0.005, "y": 0.02, "w": 0.090, "h": 0.12, "action": "key", "key": "SHIFT", "hold": true},
+    {"id": "ctrl", "label": "CTRL", "x": 0.105, "y": 0.02, "w": 0.080, "h": 0.12, "action": "key", "key": "CTRL", "hold": true},
+    {"id": "pipette", "label": "Q", "x": 0.005, "y": 0.16, "w": 0.070, "h": 0.12, "action": "key", "key": "Q"},
+    {"id": "rotate", "label": "R", "x": 0.085, "y": 0.16, "w": 0.070, "h": 0.12, "action": "key", "key": "R"},
+
+    {"id": "inventory", "label": "E", "x": 0.905, "y": 0.02, "w": 0.085, "h": 0.13, "action": "key", "key": "E"},
+    {"id": "map", "label": "M", "x": 0.815, "y": 0.02, "w": 0.085, "h": 0.13, "action": "key", "key": "M"},
+    {"id": "tab", "label": "TAB", "x": 0.905, "y": 0.17, "w": 0.085, "h": 0.11, "action": "key", "key": "TAB"},
+    {"id": "esc", "label": "ESC", "x": 0.815, "y": 0.17, "w": 0.085, "h": 0.11, "action": "key", "key": "ESC"},
+
+    {"id": "hide", "label": "≡", "x": 0.470, "y": 0.010, "w": 0.060, "h": 0.09, "action": "toggle"}
+  ]
+}

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Factorio</string>
+    <string name="play">Играть</string>
+    <string name="install">Установить данные игры</string>
+    <string name="resume">Открыть экран игры</string>
+    <string name="start_game">Запустить Factorio</string>
+    <string name="ready">Готово к игре.</string>
+    <string name="not_installed">Первый запуск: будет распаковано встроенное Linux-окружение и файлы игры (около 2 ГБ, нужно ~4 ГБ свободного места).</string>
+    <string name="running">Factorio запущена.</string>
+    <string name="x_ready">X-сервер запущен.</string>
+    <string name="settings">Настройки</string>
+    <string name="log">Лог</string>
+    <string name="error">Ошибка</string>
+    <string name="open_log_hint">Подробности — в логе.</string>
+    <string name="show_log">Показать лог</string>
+    <string name="log_empty">Лог пуст.</string>
+    <string name="copy">Копировать</string>
+    <string name="copied">Лог скопирован в буфер обмена</string>
+    <string name="clear">Очистить</string>
+    <string name="renderer">Графика</string>
+    <string name="renderer_cpu">CPU — llvmpipe (работает везде, медленнее всех)</string>
+    <string name="renderer_virgl">VirGL — Mesa virpipe → virglrenderer → Mali GLES</string>
+    <string name="renderer_hint">Аппаратный режим идёт через virglrenderer на Mali; программный (llvmpipe) — запасной, если что-то сломалось.</string>
+    <string name="controls_enable">Экранное управление</string>
+    <string name="controls_hint">Виртуальный геймпад: крестовина, кнопки мыши, колесо и несколько горячих клавиш. Проведения пальцем вне кнопок продолжают работать как тачпад. Кнопка ≡ сворачивает панель.</string>
+    <string name="controls_reset">Сбросить раскладку управления</string>
+    <string name="controls_reset_done">Раскладка управления восстановлена.</string>
+    <string name="extra_args">Доп. аргументы командной строки Factorio</string>
+    <string name="enable_audio">Звук (PulseAudio → OpenSL ES)</string>
+    <string name="no_seccomp">Режим совместимости proot (медленнее; включите, если игра не стартует)</string>
+    <string name="restart_needed">Применено. Перезапустите приложение.</string>
+    <string name="wipe">Удалить данные игры</string>
+    <string name="wipe_confirm">Распакованное окружение и все локальные сохранения будут удалены. При следующем запуске всё распакуется заново.</string>
+    <string name="stop">Остановить</string>
+    <string name="notification_text">Factorio работает в фоне</string>
+    <string name="about">Версия %1$s\nПакет: %2$s\nРендерер: %3$s\n\nЗапускает официальную aarch64-сборку Factorio для Linux внутри встроенного Arch Linux ARM через proot (без root) и показывает её в X11-сервере Lorie.\n\nFactorio — торговая марка Wube Software. Нужна своя легально приобретённая копия файлов игры.</string>
+    <string name="version_label">v0.1.23 · неофициальный порт</string>
+    <string name="x11_running">X11-сервер работает</string>
+    <string name="resolution">Разрешение X-экрана</string>
+    <string name="res_native">Нативное (чётче, медленнее)</string>
+    <string name="res_medium">Пониженное (рекомендуется)</string>
+    <string name="res_small">Низкое (быстрее всего)</string>
+
+    <!-- install / game -->
+    <string name="install_game">Установить игру</string>
+    <string name="need_game_archive">Игра не установлена. Укажите tar-архив вашей собственной сборки Factorio (.tar, .tar.gz, .tar.xz, .tar.zst).</string>
+    <string name="game_installed">Factorio</string>
+    <string name="dlc_space_age">Space Age</string>
+    <string name="dlc_base_only">базовая игра</string>
+    <string name="unpacking_game">Распаковываю игру…</string>
+    <string name="game_import_failed">Не удалось установить игру: %s</string>
+    <string name="installed">Установлено</string>
+    <string name="delete_archive_question">Игра установлена. Удалить использованный архив? Обычно он занимает ~1.5 ГБ и больше не нужен.</string>
+    <string name="delete_archive">Удалить архив</string>
+    <string name="keep_archive">Оставить</string>
+    <string name="archive_deleted">Архив удалён.</string>
+    <string name="delete_archive_manual">Провайдер хранилища не дал приложению удалить %s. Удалите файл вручную файловым менеджером.</string>
+    <string name="imported_save">Сохранение импортировано.</string>
+    <string name="imported_mod">Мод установлен.</string>
+
+    <!-- settings -->
+    <string name="settings_section_game">Игра</string>
+    <string name="settings_section_graphics">Графика</string>
+    <string name="settings_section_controls">Управление</string>
+    <string name="settings_section_misc">Прочее</string>
+    <string name="replace_game">Заменить файлы игры…</string>
+    <string name="import_save">Импортировать сохранение (.zip)…</string>
+    <string name="import_mod">Установить мод (.zip)…</string>
+    <string name="help">Что это делает?</string>
+    <string name="help_replace_game">Распаковывает другой архив Factorio поверх текущей установки. Сохранения и настройки внутри папки игры тоже заменяются — сначала скопируйте их, если они нужны.</string>
+    <string name="help_import_save">Копирует файл сохранения в папку saves игры. Сохранения Factorio — обычные .zip.</string>
+    <string name="help_import_mod">Копирует .zip мода в папку mods игры. Включите его потом в меню «Моды» внутри игры.</string>
+    <string name="help_renderer">CPU — программный рендеринг llvmpipe: медленно, но работает везде. VirGL отправляет OpenGL игры на GPU телефона через virglrenderer — именно это делает игру играбельной.</string>
+    <string name="help_resolution">Размер X-экрана, в который рисует игра. Меньше разрешение — меньше пикселей — выше FPS, но картинка мыльнее.</string>
+    <string name="help_extra_args">Дополнительные аргументы командной строки для бинарника Factorio. --video-memory-usage=low и --max-texture-size уменьшают память под атласы, что на телефоне важно.</string>
+    <string name="controls_hint_title">Экранное управление</string>
+    <string name="help_controls">Показывает виртуальный геймпад поверх игры. Проведения пальцем вне кнопок работают как тачпад, поэтому можно идти левым большим пальцем и целиться правым.</string>
+    <string name="controls_edit">Редактировать раскладку…</string>
+    <string name="help_controls_edit">Открывает редактор: перетаскивайте кнопки, добавляйте новые, меняйте их действие. Результат хранится в JSON и потом может быть экспортирован.</string>
+    <string name="help_controls_reset">Сбрасывает вашу раскладку и возвращает встроенную для текущего режима (тачпад или геймпад).</string>
+    <string name="gamepad_enable">Пресет геймпада</string>
+    <string name="help_gamepad">Заменяет крестовину аналоговым стиком и раскладывает кнопки как на контроллере. Игра по-прежнему видит клавиатуру и мышь: Android не даёт приложению создать настоящее джойстик-устройство, поэтому режим «геймпад» в самой Factorio недоступен. Настоящий контроллер, подключённый к телефону, пробрасывается автоматически.</string>
+    <string name="language">Язык интерфейса</string>
+    <string name="help_language">Язык только этого лаунчера. У игры своя настройка языка.</string>
+    <string name="lang_system">Системный</string>
+    <string name="help_audio">Запускает рядом с игрой маленький сервер PulseAudio и выводит звук в аудио Android.</string>
+    <string name="help_no_seccomp">Обход для устройств, где ускорение proot через seccomp работает неправильно (игра падает сразу). Медленнее, но совместимее.</string>
+
+    <!-- layout editor -->
+    <string name="editor_hint">Перетащите кнопку, чтобы переместить, нажмите — чтобы выбрать. Изменения сохранятся по кнопке «Сохранить» или при выходе назад.</string>
+    <string name="editor_add">Добавить</string>
+    <string name="editor_action">Изменить</string>
+    <string name="editor_delete">Удалить</string>
+    <string name="editor_save">Сохранить</string>
+    <string name="editor_saved">Раскладка сохранена.</string>
+    <string name="editor_select_first">Сначала выберите кнопку.</string>
+    <string name="editor_kind_key">Клавиша</string>
+    <string name="editor_kind_mouse">Кнопка мыши</string>
+    <string name="editor_kind_wheel">Колесо мыши</string>
+    <string name="editor_bad_key">Неизвестное имя клавиши.</string>
+    <string name="editor_label">Подпись</string>
+    <string name="editor_key_hint">Имя клавиши (E, TAB, SHIFT, F5…)</string>
+    <string name="editor_hold">Держать, пока нажата</string>
+</resources>

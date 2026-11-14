@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Factorio</string>
+    <string name="play">Play</string>
+    <string name="install">Install game data</string>
+    <string name="resume">Open game screen</string>
+    <string name="start_game">Start Factorio</string>
+    <string name="ready">Ready to play.</string>
+    <string name="not_installed">First launch: the bundled Linux environment and game files will be unpacked (about 2 GB, needs ~4 GB of free space).</string>
+    <string name="running">Factorio is running.</string>
+    <string name="x_ready">X server is running.</string>
+    <string name="settings">Settings</string>
+    <string name="log">Log</string>
+    <string name="error">Error</string>
+    <string name="open_log_hint">Open the log to see details.</string>
+    <string name="show_log">Show log</string>
+    <string name="log_empty">Log is empty.</string>
+    <string name="copy">Copy</string>
+    <string name="copied">Log copied to clipboard</string>
+    <string name="clear">Clear</string>
+    <string name="renderer">Graphics</string>
+    <string name="renderer_cpu">CPU – llvmpipe (works everywhere, slowest)</string>
+    <string name="renderer_virgl">VirGL – Mesa virpipe → virglrenderer → Mali GLES</string>
+    <string name="renderer_hint">Hardware mode goes through virglrenderer to the Mali GPU; software mode uses llvmpipe when something goes wrong.</string>
+    <string name="controls_enable">On-screen controls</string>
+    <string name="controls_hint">Virtual gamepad: D-pad, mouse buttons, wheel and a few hotkeys. Finger drags outside the buttons keep working as the touchpad. The ≡ button collapses the pad.</string>
+    <string name="controls_reset">Reset the control layout</string>
+    <string name="controls_reset_done">Control layout restored.</string>
+    <string name="extra_args">Extra Factorio command line arguments</string>
+    <string name="enable_audio">Sound (PulseAudio → OpenSL ES)</string>
+    <string name="no_seccomp">Compatibility mode for proot (slower, use if the game does not start)</string>
+    <string name="restart_needed">Applied. Restart the app to take effect.</string>
+    <string name="wipe">Delete game data</string>
+    <string name="wipe_confirm">The unpacked Linux environment and all local saves will be deleted. The next launch will unpack everything again.</string>
+    <string name="stop">Stop</string>
+    <string name="notification_text">Factorio is running in the background</string>
+    <string name="about">Version %1$s\nPackage: %2$s\nRenderer: %3$s\n\nRuns the official aarch64 Linux build of Factorio inside a bundled Arch Linux ARM root filesystem via proot (no root required) and displays it with the embedded Lorie X11 server.\n\nFactorio is a trademark of Wube Software. You need your own legally obtained copy of the game files.</string>
+    <string name="version_label">v0.1.23 · unofficial port</string>
+    <string name="x11_running">X11 display server is running</string>
+    <string name="resolution">X screen resolution</string>
+    <string name="res_native">Native (sharpest, slowest)</string>
+    <string name="res_medium">Reduced (recommended)</string>
+    <string name="res_small">Low (fastest)</string>
+
+    <!-- install / game -->
+    <string name="install_game">Install the game</string>
+    <string name="need_game_archive">The game is not installed. Pick a tar archive of your own Factorio build (.tar, .tar.gz, .tar.xz, .tar.zst).</string>
+    <string name="game_installed">Factorio</string>
+    <string name="dlc_space_age">Space Age</string>
+    <string name="dlc_base_only">base game</string>
+    <string name="unpacking_game">Unpacking the game…</string>
+    <string name="game_import_failed">Could not install the game: %s</string>
+    <string name="installed">Installed</string>
+    <string name="delete_archive_question">The game is installed. Delete the archive you just used? It is usually 1.5 GB and no longer needed.</string>
+    <string name="delete_archive">Delete the archive</string>
+    <string name="keep_archive">Keep it</string>
+    <string name="archive_deleted">Archive deleted.</string>
+    <string name="delete_archive_manual">The storage provider did not let the app delete %s. Remove it with a file manager.</string>
+    <string name="imported_save">Save imported.</string>
+    <string name="imported_mod">Mod imported.</string>
+
+    <!-- settings -->
+    <string name="settings_section_game">Game</string>
+    <string name="settings_section_graphics">Graphics</string>
+    <string name="settings_section_controls">Controls</string>
+    <string name="settings_section_misc">Other</string>
+    <string name="replace_game">Replace the game files…</string>
+    <string name="import_save">Import a save (.zip)…</string>
+    <string name="import_mod">Install a mod (.zip)…</string>
+    <string name="help">What does it do?</string>
+    <string name="help_replace_game">Unpacks another Factorio archive over the current installation. Saves and settings inside the game folder are replaced too, so copy them out first if you need them.</string>
+    <string name="help_import_save">Copies a save file into the game’s saves folder. Factorio saves are ordinary .zip files.</string>
+    <string name="help_import_mod">Copies a mod .zip into the game’s mods folder. Enable it in the game’s Mods menu afterwards.</string>
+    <string name="help_renderer">CPU uses the llvmpipe software renderer: slow but works everywhere. VirGL sends the game’s OpenGL to the phone GPU through virglrenderer, which is what makes it playable.</string>
+    <string name="help_resolution">The X screen the game renders into. Lower resolution = fewer pixels = higher FPS, but a blurrier picture.</string>
+    <string name="help_extra_args">Extra command line arguments for the Factorio binary. --video-memory-usage=low and --max-texture-size keep the atlas memory small, which matters on a phone.</string>
+    <string name="controls_hint_title">On-screen controls</string>
+    <string name="help_controls">Shows the virtual gamepad over the game. Finger drags outside the buttons still work as a touchpad, so you can walk with the left thumb and aim with the right one.</string>
+    <string name="controls_edit">Edit the layout…</string>
+    <string name="help_controls_edit">Opens the layout editor: drag buttons around, add new ones, change what they do. The result is stored as JSON and can be exported later.</string>
+    <string name="help_controls_reset">Throws away your layout and restores the bundled one for the current mode (touch or gamepad).</string>
+    <string name="gamepad_enable">Gamepad preset</string>
+    <string name="help_gamepad">Replaces the D-pad with an analogue stick and lays the buttons out like a controller. The game still sees keyboard and mouse: Android does not let apps create a real joystick device, so Factorio’s own "gamepad" input mode cannot be used. A real controller paired with the phone is forwarded automatically.</string>
+    <string name="language">Interface language</string>
+    <string name="help_language">Language of this launcher only. The game has its own language setting.</string>
+    <string name="lang_system">System</string>
+    <string name="help_audio">Starts a small PulseAudio server next to the game and routes it to Android audio.</string>
+    <string name="help_no_seccomp">Workaround for devices where proot’s seccomp acceleration misbehaves (game crashes immediately). Slower, but more compatible.</string>
+
+    <!-- layout editor -->
+    <string name="editor_hint">Drag a button to move it, tap to select. Changes are saved when you press Save or go back.</string>
+    <string name="editor_add">Add</string>
+    <string name="editor_action">Change</string>
+    <string name="editor_delete">Delete</string>
+    <string name="editor_save">Save</string>
+    <string name="editor_saved">Layout saved.</string>
+    <string name="editor_select_first">Select a button first.</string>
+    <string name="editor_kind_key">Key</string>
+    <string name="editor_kind_mouse">Mouse button</string>
+    <string name="editor_kind_wheel">Mouse wheel</string>
+    <string name="editor_bad_key">Unknown key name.</string>
+    <string name="editor_label">Label</string>
+    <string name="editor_key_hint">Key name (E, TAB, SHIFT, F5…)</string>
+    <string name="editor_hold">Hold while pressed</string>
+</resources>

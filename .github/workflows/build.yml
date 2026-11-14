@@ -1,0 +1,115 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # The Linux environment is big and slow to build, so it is cached by the hash of the scripts
+  # that define it. It contains no Factorio files, only Arch Linux ARM + Mesa + X libraries.
+  rootfs:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install build tools
+        run: pacman -Sy --noconfirm --needed zstd curl tar
+
+      - name: cache rootfs
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: .work/rootfs.tar.zst
+          key: rootfs-${{ hashFiles('tools/build-rootfs.sh', 'tools/prune-rootfs.sh', 'tools/pacman-aarch64.conf', 'rootfs/opt/factorio/run.sh') }}
+
+      - name: build the Linux environment
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          WITH_GAME=0 WORK=$PWD/.work bash tools/build-rootfs.sh
+          bash tools/prune-rootfs.sh $PWD/.work/rootfs
+          zstd -q -T0 -12 -f .work/rootfs.tar -o .work/rootfs.tar.zst
+          rm -f .work/rootfs.tar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rootfs
+          path: .work/rootfs.tar.zst
+          retention-days: 7
+
+  apk:
+    needs: rootfs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: install NDK and build tools
+        run: |
+          sdkmanager --install "ndk;29.0.14206865" "cmake;3.22.1" "platforms;android-34" "build-tools;34.0.0"
+          echo "ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/29.0.14206865" >> "$GITHUB_ENV"
+
+      - name: python deps for meson
+        run: pip3 install --user meson ninja mako pyyaml
+
+      - name: Termux helper binaries
+        run: python3 tools/gettermux.py proot virglrenderer-android pulseaudio
+
+      - name: build virglrenderer + libepoxy
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          WORK=$PWD/.virgl bash tools/build-virgl.sh
+
+      - name: stage assets
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          VIRGL_BUILD=$PWD/.virgl/vr-build EPOXY_BUILD=$PWD/.virgl/andeps \
+            PATCHELF=patchelf bash tools/stage-assets.sh
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: rootfs
+          path: app/src/main/assets
+
+      - name: build APKs
+        run: |
+          rm -rf app/build/intermediates/apk app/build/outputs/apk
+          ./gradlew --no-daemon --no-configuration-cache assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk "FactorioAndroid-${GITHUB_REF_NAME#v}-arm64.apk"
+          mv app/src/main/assets/rootfs.tar.zst /tmp/rootfs-hold.zst
+          rm -rf app/build/intermediates/apk app/build/outputs/apk
+          ./gradlew --no-daemon --no-configuration-cache assembleRelease
+          mv /tmp/rootfs-hold.zst app/src/main/assets/rootfs.tar.zst
+          cp app/build/outputs/apk/release/app-release.apk "FactorioAndroid-${GITHUB_REF_NAME#v}-dev.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apks
+          path: FactorioAndroid-*.apk
+
+      - name: publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: FactorioAndroid-*.apk
+          generate_release_notes: true
+          body: |
+            **This release contains no Factorio files.** The APK ships the Linux environment
+            only; on first launch the app asks for a tar archive of your own Factorio build
+            (`.tar`, `.tar.gz`, `.tar.xz` or `.tar.zst`).
+
+            * `-arm64.apk` — contains the Linux environment, install and play.
+            * `-dev.apk` — 40 MB, no environment; install over the full build to keep your
+              existing installation.

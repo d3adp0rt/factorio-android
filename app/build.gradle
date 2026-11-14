@@ -1,0 +1,77 @@
+apply plugin: 'com.android.application'
+apply from: '../lorie/version.gradle'
+
+android {
+    namespace 'io.github.factorioandroid'
+    compileSdk 34
+    ndkVersion termuxX11NdkVersion
+
+    defaultConfig {
+        applicationId "io.github.factorioandroid"
+        minSdkVersion 24
+        // targetSdk 28 is REQUIRED: starting with Android 10 the SELinux policy for
+        // untrusted_app_29+ forbids executing app_process / files from the app data dir,
+        // which is exactly how the X server process and proot are started.
+        targetSdkVersion 28
+        versionCode 33
+        versionName "0.4.0"
+        ndk {
+            abiFilters 'arm64-v8a'
+        }
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.22.1"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            // self-signed with the debug key: this APK is meant for sideloading only
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_9
+        targetCompatibility JavaVersion.VERSION_1_9
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+
+    androidResources {
+        // the bundled rootfs is already a single big archive, do not re-compress it
+        noCompress += ['tar', 'zst']
+    }
+
+    lint {
+        // targetSdkVersion 28 is deliberate (see above), the Play-only checks do not apply
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation project(':lorie')
+    // .tar.xz support for the game archive the user supplies (public domain)
+    implementation 'org.tukaani:xz:1.10'
+}
