@@ -16,6 +16,10 @@ mkdir -p "$A"
 rm -rf "$A/bin" "$A/proot" "$A/pulse" "$A/virgl" "$A/angle" "$A/pack"
 mkdir -p "$A/bin" "$A/proot/libexec" "$A/pulse/modules" "$A/virgl" "$A/angle"
 
+# the launcher script lives in the repository and is written into the game directory by the
+# app, so it survives re-installing the game (the whole /opt/factorio is replaced then)
+cp -a "$PROJECT/rootfs/opt/factorio/run.sh" "$A/run.sh"
+
 echo "== bin"
 cp -a "$TR/bin/proot" "$TR/bin/pulseaudio" "$A/bin/"
 if [ -z "${VIRGL_BUILD:-}" ]; then

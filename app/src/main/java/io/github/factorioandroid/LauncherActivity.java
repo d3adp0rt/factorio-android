@@ -143,6 +143,16 @@ public class LauncherActivity extends Activity {
                     progress("Unpacking bundled Linux environment…", 0f);
                     Setup.run(LauncherActivity.this, (text, fraction) -> progress(text, fraction));
                 }
+                if (!GameInstaller.installed(LauncherActivity.this)) {
+                    ui.post(() -> {
+                        busy = false;
+                        playButton.setEnabled(true);
+                        bar.setVisibility(View.INVISIBLE);
+                        updateUi();
+                        pickGameArchive();
+                    });
+                    return;
+                }
                 progress("Starting X server…", -1f);
                 Game.startX(LauncherActivity.this);
                 if (!Game.waitForX(LauncherActivity.this, 25000))

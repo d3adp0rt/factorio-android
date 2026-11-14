@@ -72,7 +72,9 @@ fi
 if command -v xdotool >/dev/null 2>&1; then
   (
     wid=""
-    for i in $(seq 1 120); do
+    i=0
+    while [ "$i" -lt 120 ]; do
+      i=$((i + 1))
       wid=$(xdotool search --onlyvisible --classname factorio 2>/dev/null | head -1)
       [ -z "$wid" ] && wid=$(xdotool search --onlyvisible --class factorio 2>/dev/null | head -1)
       [ -z "$wid" ] && wid=$(xdotool search --onlyvisible --name Factorio 2>/dev/null | head -1)

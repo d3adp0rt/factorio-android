@@ -124,6 +124,8 @@ public final class GameInstaller {
             throw new IOException("cannot move the unpacked game into " + target);
         }
         TarExtractor.deleteRec(staging, new AndroidFs());
+        // run.sh is part of the game directory the archive just replaced
+        Setup.writeRunScript(c);
         p.onProgress("Installed", 1f);
     }
 

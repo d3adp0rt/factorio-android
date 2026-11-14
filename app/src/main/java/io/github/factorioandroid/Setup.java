@@ -21,7 +21,7 @@ import java.util.List;
  */
 public final class Setup {
     /** Bump this whenever the bundled assets change, it forces a re-extract. */
-    private static final String SETUP_VERSION = "16";
+    private static final String SETUP_VERSION = "17";
 
     public interface Progress {
         /** @param text current step, @param fraction 0..1 or negative if unknown */
@@ -120,6 +120,7 @@ public final class Setup {
             extractRootfs(c, p);
         }
 
+        writeRunScript(c);
         writeMarker(marker(c), SETUP_VERSION);
         Logs.add(c, "setup", "setup finished");
         p.onProgress("Ready", 1f);
@@ -252,6 +253,27 @@ public final class Setup {
                 } catch (IOException ignored) {
                 }
             }
+        }
+    }
+
+    /**
+     * Installs the launcher script into the game directory. It lives in the APK assets because
+     * the game directory is replaced wholesale when the user installs another archive.
+     */
+    public static void writeRunScript(Context c) {
+        File dir = new File(root(c), "opt/factorio");
+        if (!dir.isDirectory() && !dir.mkdirs())
+            return;
+        File out = new File(dir, "run.sh");
+        try (InputStream in = c.getAssets().open("run.sh");
+             OutputStream os = new FileOutputStream(out)) {
+            byte[] buf = new byte[16384];
+            int n;
+            while ((n = in.read(buf)) > 0)
+                os.write(buf, 0, n);
+            android.system.Os.chmod(out.getAbsolutePath(), 0755);
+        } catch (Exception e) {
+            Logs.add(c, "setup", "cannot write run.sh: " + e);
         }
     }
 
