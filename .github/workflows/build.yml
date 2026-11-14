@@ -20,7 +20,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: install build tools
-        run: pacman -Sy --noconfirm --needed zstd curl tar
+        run: |
+          # a partial upgrade breaks pacman inside the container, so upgrade first
+          pacman -Syu --noconfirm --needed zstd curl tar
 
       - name: cache rootfs
         id: cache
