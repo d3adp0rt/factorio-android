@@ -38,6 +38,18 @@ if [ -n "$DIAG" ] && [ -f config/config.ini ]; then
   sed -n '/^\[graphics\]/,/^\[/p' config/config.ini | grep -vE '^[[:space:]]*;' | head -40
 fi
 
+# A real gamepad device would be created through /dev/uinput; Android usually denies that to
+# applications, so the answer decides whether the gamepad can be a real joystick or has to be
+# translated into keys/mouse. Logged on every start, it is three lines.
+echo "----- input devices -----"
+ls -l /dev/uinput 2>&1 | head -2
+if [ -w /dev/uinput ]; then
+  echo "uinput: WRITABLE (a real virtual gamepad is possible)"
+else
+  echo "uinput: not writable (gamepad will be key/mouse translation)"
+fi
+ls /dev/input 2>/dev/null | head -4
+
 if [ -n "$DIAG" ]; then
   export LIBGL_DEBUG=verbose
   MESA_DEBUG=1

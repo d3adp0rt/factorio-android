@@ -37,6 +37,8 @@ public class LauncherActivity extends Activity {
     private static final int REQ_SAVE = 1002;
     private static final int REQ_MOD = 1003;
     private Button playButton;
+    private Button rootfsButton;
+    private Button gameButton;
     private volatile boolean busy;
     private final Handler ui = new Handler(Looper.getMainLooper());
 
@@ -62,8 +64,15 @@ public class LauncherActivity extends Activity {
         gameInfo = findViewById(R.id.game_info);
         bar = findViewById(R.id.progress);
         playButton = findViewById(R.id.play);
+        rootfsButton = findViewById(R.id.install_rootfs);
+        gameButton = findViewById(R.id.install_game);
+
+        TextView appVersion = findViewById(R.id.app_version);
+        appVersion.setText(getString(R.string.version_label_full, BuildConfig.VERSION_NAME));
 
         playButton.setOnClickListener(v -> play());
+        rootfsButton.setOnClickListener(v -> unpackRootfs());
+        gameButton.setOnClickListener(v -> pickGameArchive());
         findViewById(R.id.settings).setOnClickListener(v -> showSettings());
         findViewById(R.id.log).setOnClickListener(v -> showLog());
         findViewById(R.id.version).setOnClickListener(v -> showAbout());
@@ -80,6 +89,13 @@ public class LauncherActivity extends Activity {
         if (busy)
             return;
         updateGameInfo();
+        boolean base = Setup.isReady(this);
+        boolean game = GameInstaller.installed(this);
+        rootfsButton.setEnabled(!base && !Game.isXRunning());
+        rootfsButton.setText(base ? R.string.step_rootfs_done : R.string.step_unpack_rootfs);
+        gameButton.setEnabled(base && !Game.isXRunning());
+        gameButton.setText(!base ? R.string.step_game_needs_rootfs
+                : game ? R.string.step_game_reset : R.string.step_unpack_game);
         if (Game.isGameRunning()) {
             playButton.setText(R.string.resume);
             status.setText(R.string.running);
@@ -183,6 +199,30 @@ public class LauncherActivity extends Activity {
                 ui.post(() -> fail(e.getMessage() == null ? e.toString() : e.getMessage()));
             }
         }, "setup").start();
+    }
+
+    /** Unpacks the bundled Linux environment only (the game is installed separately). */
+    private void unpackRootfs() {
+        if (busy || Game.isXRunning())
+            return;
+        busy = true;
+        playButton.setEnabled(false);
+        rootfsButton.setEnabled(false);
+        gameButton.setEnabled(false);
+        bar.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            try {
+                Setup.run(LauncherActivity.this, (text, fraction) -> progress(text, fraction));
+                ui.post(() -> {
+                    busy = false;
+                    playButton.setEnabled(true);
+                    bar.setVisibility(View.INVISIBLE);
+                    updateUi();
+                });
+            } catch (final Exception e) {
+                ui.post(() -> fail(e.getMessage() == null ? e.toString() : e.getMessage()));
+            }
+        }, "rootfs-install").start();
     }
 
     private void fail(String message) {
@@ -428,20 +468,56 @@ public class LauncherActivity extends Activity {
     }
 
     private void showSettings() {
+        String[] items = {
+                getString(R.string.settings_section_game),
+                getString(R.string.settings_section_graphics),
+                getString(R.string.settings_section_controls),
+                getString(R.string.settings_section_misc)};
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.settings)
+                .setItems(items, (d, which) -> {
+                    switch (which) {
+                        case 0: settingsGame(); break;
+                        case 1: settingsGraphics(); break;
+                        case 2: settingsControls(); break;
+                        default: settingsMisc(); break;
+                    }
+                })
+                .setNeutralButton(R.string.wipe, (d, w) -> confirmWipe())
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private AlertDialog.Builder dialogFor(LinearLayout ll) {
+        android.widget.ScrollView sv = new android.widget.ScrollView(this);
+        sv.addView(ll);
+        return new AlertDialog.Builder(this).setView(sv);
+    }
+
+    private LinearLayout column() {
         float d = getResources().getDisplayMetrics().density;
         int pad = (int) (16 * d);
-
         LinearLayout ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setPadding(pad, pad, pad, pad);
+        return ll;
+    }
 
-        // ---------------------------------------------------------------- game
-        section(ll, R.string.settings_section_game);
+    private void settingsGame() {
+        LinearLayout ll = column();
 
-        Button reinstall = new Button(this);
-        reinstall.setText(R.string.replace_game);
-        reinstall.setOnClickListener(v -> pickGameArchive());
-        ll.addView(reinstall);
+        Button unpack = new Button(this);
+        unpack.setText(Setup.isReady(this) ? R.string.step_rootfs_done : R.string.step_unpack_rootfs);
+        unpack.setEnabled(!Setup.isReady(this));
+        unpack.setOnClickListener(v -> unpackRootfs());
+        ll.addView(unpack);
+        infoRow(ll, R.string.step_unpack_rootfs, R.string.help_unpack_rootfs);
+
+        Button game = new Button(this);
+        game.setText(R.string.replace_game);
+        game.setEnabled(Setup.isReady(this));
+        game.setOnClickListener(v -> pickGameArchive());
+        ll.addView(game);
         infoRow(ll, R.string.replace_game, R.string.help_replace_game);
 
         Button importSave = new Button(this);
@@ -456,13 +532,17 @@ public class LauncherActivity extends Activity {
         ll.addView(importMod);
         infoRow(ll, R.string.import_mod, R.string.help_import_mod);
 
-        // ---------------------------------------------------------------- graphics
-        section(ll, R.string.settings_section_graphics);
+        dialogFor(ll).setTitle(R.string.settings_section_game).setPositiveButton(
+                android.R.string.ok, null).show();
+    }
+
+    private void settingsGraphics() {
+        LinearLayout ll = column();
 
         infoRow(ll, R.string.renderer, R.string.help_renderer);
         final String[] backends = {Config.CPU, Config.VIRGL};
         final int[] backendStrings = {R.string.renderer_cpu, R.string.renderer_virgl};
-        RadioGroup rg = new RadioGroup(this);
+        final RadioGroup rg = new RadioGroup(this);
         String current = Config.renderer(this);
         for (int i = 0; i < backends.length; i++) {
             RadioButton rb = new RadioButton(this);
@@ -475,8 +555,23 @@ public class LauncherActivity extends Activity {
         }
         ll.addView(rg);
 
+        infoRow(ll, R.string.screen_mode, R.string.help_screen_mode);
+        final RadioGroup modeGroup = new RadioGroup(this);
+        final String[] modes = {Config.SCREEN_FILL, Config.SCREEN_FIT};
+        int[] modeLabels = {R.string.screen_fill, R.string.screen_fit};
+        for (int i = 0; i < modes.length; i++) {
+            RadioButton rb = new RadioButton(this);
+            rb.setText(modeLabels[i]);
+            rb.setId(300 + i);
+            rb.setTag(modes[i]);
+            modeGroup.addView(rb);
+            if (modes[i].equals(Config.screenMode(this)))
+                modeGroup.check(300 + i);
+        }
+        ll.addView(modeGroup);
+
         infoRow(ll, R.string.resolution, R.string.help_resolution);
-        RadioGroup resGroup = new RadioGroup(this);
+        final RadioGroup resGroup = new RadioGroup(this);
         String[] labels = {getString(R.string.res_native), getString(R.string.res_medium),
                 getString(R.string.res_small)};
         int[] scales = {100, 150, 200};
@@ -493,14 +588,33 @@ public class LauncherActivity extends Activity {
         ll.addView(resGroup);
 
         infoRow(ll, R.string.extra_args, R.string.help_extra_args);
-        EditText args = new EditText(this);
+        final EditText args = new EditText(this);
         args.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         args.setText(Config.extraArgs(this));
         args.setHint("--max-texture-size=2048 --video-memory-usage=low");
         ll.addView(args);
 
-        // ---------------------------------------------------------------- controls
-        section(ll, R.string.settings_section_controls);
+        dialogFor(ll).setTitle(R.string.settings_section_graphics)
+                .setPositiveButton(android.R.string.ok, (dlg, w) -> {
+                    android.view.View picked = rg.findViewById(rg.getCheckedRadioButtonId());
+                    if (picked != null)
+                        Config.setRenderer(this, (String) picked.getTag());
+                    android.view.View mode = modeGroup.findViewById(modeGroup.getCheckedRadioButtonId());
+                    if (mode != null)
+                        Config.setScreenMode(this, (String) mode.getTag());
+                    Config.setExtraArgs(this, args.getText().toString().trim());
+                    int id = resGroup.getCheckedRadioButtonId();
+                    Config.setDisplayScale(this, id > 0 ? id - 100 : 150);
+                    applyLorieDefaults();
+                    Toast.makeText(this, R.string.restart_needed, Toast.LENGTH_LONG).show();
+                    updateUi();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void settingsControls() {
+        LinearLayout ll = column();
 
         final CheckBox controls = new CheckBox(this);
         controls.setText(R.string.controls_enable);
@@ -508,11 +622,15 @@ public class LauncherActivity extends Activity {
         ll.addView(controls);
         infoRow(ll, R.string.controls_hint_title, R.string.help_controls);
 
+        final CheckBox gamepad = new CheckBox(this);
+        gamepad.setText(R.string.gamepad_enable);
+        gamepad.setChecked(Controls.gamepadEnabled(this));
+        ll.addView(gamepad);
+        infoRow(ll, R.string.gamepad_enable, R.string.help_gamepad);
+
         Button editLayout = new Button(this);
         editLayout.setText(R.string.controls_edit);
-        editLayout.setOnClickListener(v -> {
-            startActivity(new Intent(this, ControlsEditorActivity.class));
-        });
+        editLayout.setOnClickListener(v -> startActivity(new Intent(this, ControlsEditorActivity.class)));
         ll.addView(editLayout);
         infoRow(ll, R.string.controls_edit, R.string.help_controls_edit);
 
@@ -525,17 +643,23 @@ public class LauncherActivity extends Activity {
         ll.addView(resetControls);
         infoRow(ll, R.string.controls_reset, R.string.help_controls_reset);
 
-        final CheckBox gamepad = new CheckBox(this);
-        gamepad.setText(R.string.gamepad_enable);
-        gamepad.setChecked(Controls.gamepadEnabled(this));
-        ll.addView(gamepad);
-        infoRow(ll, R.string.gamepad_enable, R.string.help_gamepad);
+        dialogFor(ll).setTitle(R.string.settings_section_controls)
+                .setPositiveButton(android.R.string.ok, (dlg, w) -> {
+                    Controls.setEnabled(this, controls.isChecked());
+                    boolean padChanged = gamepad.isChecked() != Controls.gamepadEnabled(this);
+                    Controls.setGamepadEnabled(this, gamepad.isChecked());
+                    if (padChanged)
+                        Controls.reset(this);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
 
-        // ---------------------------------------------------------------- misc
-        section(ll, R.string.settings_section_misc);
+    private void settingsMisc() {
+        LinearLayout ll = column();
 
         infoRow(ll, R.string.language, R.string.help_language);
-        RadioGroup langGroup = new RadioGroup(this);
+        final RadioGroup langGroup = new RadioGroup(this);
         final String[] langs = {"system", "ru", "en"};
         String[] langLabels = {getString(R.string.lang_system), "Русский", "English"};
         String curLang = Config.language(this);
@@ -562,35 +686,19 @@ public class LauncherActivity extends Activity {
         ll.addView(noSeccomp);
         infoRow(ll, R.string.no_seccomp, R.string.help_no_seccomp);
 
-        android.widget.ScrollView sv = new android.widget.ScrollView(this);
-        sv.addView(ll);
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.settings)
-                .setView(sv)
+        dialogFor(ll).setTitle(R.string.settings_section_misc)
                 .setPositiveButton(android.R.string.ok, (dlg, w) -> {
-                    android.view.View picked = rg.findViewById(rg.getCheckedRadioButtonId());
-                    if (picked != null)
-                        Config.setRenderer(this, (String) picked.getTag());
-                    Config.setExtraArgs(this, args.getText().toString().trim());
-                    Controls.setEnabled(this, controls.isChecked());
-                    boolean padChanged = gamepad.isChecked() != Controls.gamepadEnabled(this);
-                    Controls.setGamepadEnabled(this, gamepad.isChecked());
-                    if (padChanged)
-                        Controls.reset(this);   // switch to the matching preset
                     Config.setAudio(this, audio.isChecked());
                     Config.setNoSeccomp(this, noSeccomp.isChecked());
-                    int id = resGroup.getCheckedRadioButtonId();
-                    Config.setDisplayScale(this, id > 0 ? id - 100 : 150);
                     android.view.View lang = langGroup.findViewById(langGroup.getCheckedRadioButtonId());
                     String newLang = lang != null ? (String) lang.getTag() : "system";
-                    boolean languageChanged = !newLang.equals(Config.language(this));
+                    boolean changed = !newLang.equals(Config.language(this));
                     Config.setLanguage(this, newLang);
-                    Toast.makeText(this, R.string.restart_needed, Toast.LENGTH_LONG).show();
-                    if (languageChanged)
+                    if (changed) {
+                        Toast.makeText(this, R.string.restart_needed, Toast.LENGTH_LONG).show();
                         recreate();
+                    }
                 })
-                .setNeutralButton(R.string.wipe, (dlg, w) -> confirmWipe())
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
@@ -612,11 +720,22 @@ public class LauncherActivity extends Activity {
     private void applyLorieDefaults() {
         android.content.SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
         android.content.SharedPreferences.Editor e = p.edit();
-        // our own setting wins: smaller X screen = the main speed lever for llvmpipe
-        e.putString("displayResolutionMode", "scaled");
-        e.putInt("displayScale", Config.displayScale(this));
+        int scale = Math.max(50, Config.displayScale(this));
+        if (Config.SCREEN_FIT.equals(Config.screenMode(this))) {
+            // fixed 16:9 window centred on the phone screen with black bars around it
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int w = dm.widthPixels * 100 / scale;
+            int h = Math.round(w * 9f / 16f);
+            e.putString("displayResolutionMode", "exact");
+            e.putString("displayResolutionExact", w + "x" + h);
+            e.putBoolean("displayStretch", false);
+        } else {
+            // X screen matches the phone aspect ratio, stretched to fill it
+            e.putString("displayResolutionMode", "scaled");
+            e.putBoolean("displayStretch", true);
+        }
+        e.putInt("displayScale", scale);
         putIfAbsent(p, e, "adjustResolution", true);
-        putIfAbsent(p, e, "displayStretch", true);
         putIfAbsent(p, e, "fullscreen", true);
         putIfAbsent(p, e, "forceOrientation", "landscape");
         putIfAbsent(p, e, "screenIdleTimeout", "never");

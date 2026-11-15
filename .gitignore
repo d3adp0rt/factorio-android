@@ -5,8 +5,6 @@ build/
 local.properties
 *.apk
 *.aab
-*.keystore
-!debug.keystore
 
 # --- the game itself must NEVER be committed -------------------------------
 # Factorio is proprietary. The app ships without it and asks the user for their own archive.

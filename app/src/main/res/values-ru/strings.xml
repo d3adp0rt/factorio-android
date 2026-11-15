@@ -102,4 +102,16 @@
     <string name="editor_label">Подпись</string>
     <string name="editor_key_hint">Имя клавиши (E, TAB, SHIFT, F5…)</string>
     <string name="editor_hold">Держать, пока нажата</string>
+
+    <string name="version_label_full">версия %1$s</string>
+    <string name="step_unpack_rootfs">Распаковать Linux-окружение</string>
+    <string name="step_rootfs_done">Linux-окружение распаковано</string>
+    <string name="step_unpack_game">Распаковать игру (.tar…)</string>
+    <string name="step_game_needs_rootfs">Сначала распакуйте Linux-окружение</string>
+    <string name="step_game_reset">Заменить файлы игры…</string>
+    <string name="help_unpack_rootfs">Распаковывает встроенное окружение Arch Linux ARM (Mesa, X-библиотеки). Файлов игры в нём нет; занимает несколько секунд и около 450 МБ.</string>
+    <string name="screen_mode">Экран</string>
+    <string name="screen_fill">На весь экран (пропорции телефона)</string>
+    <string name="screen_fit">Фиксированные 16:9 с чёрными полосами</string>
+    <string name="help_screen_mode">«На весь экран» — X-экран получает ровно пропорции телефона и растягивается до краёв. «16:9» — классические пропорции, картинка центрируется с чёрными полями.</string>
 </resources>

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.0
+
+* **Stable signing key.** CI used a throwaway debug keystore, so every GitHub build had a
+  different certificate and Android refused to update over an existing install. The key now
+  lives in `keystore/factorio.jks` and is shared by local and CI builds. Installing 0.5.0 over
+  an older build needs one uninstall (the certificate changes once).
+* The installer is split into two explicit steps: unpack the Linux environment, then unpack the
+  game. The second button stays disabled until the first one is done.
+* The settings are split into sections (game / graphics / controls / other), each with the
+  circled ⓘ help.
+* The launcher shows the real app version.
+* Two screen modes: fill the phone's aspect ratio, or fixed 16:9 letterboxed.
+* `run.sh` logs whether `/dev/uinput` is writable, which decides whether a real virtual
+  gamepad can be created or the gamepad has to stay a key/mouse translation.
+
 ## 0.4.0
 
 **The game is no longer shipped with the app.**

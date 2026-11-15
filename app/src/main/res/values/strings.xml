@@ -102,4 +102,16 @@
     <string name="editor_label">Label</string>
     <string name="editor_key_hint">Key name (E, TAB, SHIFT, F5…)</string>
     <string name="editor_hold">Hold while pressed</string>
+
+    <string name="version_label_full">version %1$s</string>
+    <string name="step_unpack_rootfs">Unpack the Linux environment</string>
+    <string name="step_rootfs_done">Linux environment unpacked</string>
+    <string name="step_unpack_game">Unpack the game (.tar…)</string>
+    <string name="step_game_needs_rootfs">Unpack the Linux environment first</string>
+    <string name="step_game_reset">Replace the game files…</string>
+    <string name="help_unpack_rootfs">Unpacks the bundled Arch Linux ARM environment (Mesa, X libraries). It contains no game files; it takes a few seconds and about 450 MB of space.</string>
+    <string name="screen_mode">Screen</string>
+    <string name="screen_fill">Fill the screen (phone aspect)</string>
+    <string name="screen_fit">Fixed 16:9 with black bars</string>
+    <string name="help_screen_mode">Fill uses the whole phone screen: the X screen gets exactly the phone’s aspect ratio and is stretched to the edges. Fixed 16:9 keeps the classic proportions and letterboxes the picture.</string>
 </resources>

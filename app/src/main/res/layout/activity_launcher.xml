@@ -24,12 +24,14 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/app_version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/version_label"
             android:textColor="#7a7060"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/status"
@@ -72,6 +74,20 @@
             android:textColor="#1b1710"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/install_rootfs"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/step_unpack_rootfs" />
+
+        <Button
+            android:id="@+id/install_game"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/step_unpack_game" />
 
         <LinearLayout
             android:layout_width="match_parent"

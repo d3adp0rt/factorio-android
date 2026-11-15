@@ -97,6 +97,18 @@ public final class Config {
         }
     }
 
+    /** "fill" = X screen matches the phone aspect, "fit" = fixed 16:9 letterboxed. */
+    public static final String SCREEN_FILL = "fill";
+    public static final String SCREEN_FIT = "fit";
+
+    public static String screenMode(Context c) {
+        return sp(c).getString("screen_mode", SCREEN_FILL);
+    }
+
+    public static void setScreenMode(Context c, String v) {
+        sp(c).edit().putString("screen_mode", v).apply();
+    }
+
     /** "system", "ru" or "en" - only the app's own UI, the game has its own setting. */
     public static String language(Context c) {
         return sp(c).getString("language", "system");
