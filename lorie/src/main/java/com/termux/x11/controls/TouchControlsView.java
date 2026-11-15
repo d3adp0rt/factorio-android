@@ -286,6 +286,8 @@ public class TouchControlsView extends View {
             coords[i] = new MotionEvent.PointerCoords();
             src.getPointerProperties(idx[i], props[i]);
             src.getPointerCoords(idx[i], coords[i]);
+            // renumber: the touchpad's gesture detectors expect ids 0..n-1 in a fresh gesture
+            props[i].id = i;
         }
         int a = action;
         if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_POINTER_UP) {

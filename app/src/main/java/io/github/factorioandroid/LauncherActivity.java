@@ -83,23 +83,27 @@ public class LauncherActivity extends Activity {
     protected void onResume() {
         super.onResume();
         updateUi();
+        // the game may have exited while we were in the background; refresh the buttons
+        // shortly after coming back so a dead X server is detected right away
+        ui.postDelayed(this::updateUi, 800);
     }
 
     private void updateUi() {
         if (busy)
             return;
+        Game.syncXState(this);
         updateGameInfo();
         boolean base = Setup.isReady(this);
         boolean game = GameInstaller.installed(this);
-        rootfsButton.setEnabled(!base && !Game.isXRunning());
+        rootfsButton.setEnabled(!base && !Game.isXRunning(this));
         rootfsButton.setText(base ? R.string.step_rootfs_done : R.string.step_unpack_rootfs);
-        gameButton.setEnabled(base && !Game.isXRunning());
+        gameButton.setEnabled(base && !Game.isXRunning(this));
         gameButton.setText(!base ? R.string.step_game_needs_rootfs
                 : game ? R.string.step_game_reset : R.string.step_unpack_game);
         if (Game.isGameRunning()) {
             playButton.setText(R.string.resume);
             status.setText(R.string.running);
-        } else if (Game.isXRunning()) {
+        } else if (Game.isXRunning(this)) {
             playButton.setText(R.string.start_game);
             status.setText(R.string.x_ready);
         } else if (Setup.isReady(this) && GameInstaller.installed(this)) {
@@ -203,7 +207,7 @@ public class LauncherActivity extends Activity {
 
     /** Unpacks the bundled Linux environment only (the game is installed separately). */
     private void unpackRootfs() {
-        if (busy || Game.isXRunning())
+        if (busy || Game.isXRunning(this))
             return;
         busy = true;
         playButton.setEnabled(false);

@@ -34,12 +34,29 @@ public final class Game {
     private Game() {
     }
 
-    public static boolean isXRunning() {
-        return xStarted;
-    }
-
     private static File xSocket(Context c) {
         return new File(new File(Setup.tmpDir(c), ".X11-unix"), "X0");
+    }
+
+    /**
+     * True while the X server is actually alive. The socket is the source of truth: the flag
+     * alone lies when the :x11 process was killed (which happens when the system reclaims the
+     * process, or when the user quits the game and the server is gone for any reason).
+     */
+    public static boolean isXRunning(Context c) {
+        if (!xStarted)
+            return false;
+        if (!xSocket(c).exists()) {
+            Logs.add(c, "x11", "the X server socket is gone - the server is not running");
+            xStarted = false;
+            return false;
+        }
+        return true;
+    }
+
+    /** Called from the launcher: keeps the UI in sync with a server that died. */
+    public static void syncXState(Context c) {
+        isXRunning(c);
     }
 
     public static synchronized boolean isGameRunning() {
@@ -241,6 +258,9 @@ public final class Game {
         env.put("DISPLAY", DISPLAY);
         env.put("XDG_RUNTIME_DIR", "/tmp");
         env.put("PULSE_SERVER", "tcp:127.0.0.1:4713");
+        // there is no window manager in the container, so SDL may think its window is not
+        // focused and then silently drops mouse clicks and the wheel
+        env.put("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
         if (Config.CPU.equals(backend)) {
             env.put("GALLIUM_DRIVER", "llvmpipe");
             env.put("LIBGL_ALWAYS_SOFTWARE", "1");

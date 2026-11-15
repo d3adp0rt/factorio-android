@@ -78,26 +78,41 @@ if [ -n "$DIAG" ]; then
   echo "----- diag: end -----"
 fi
 
-# There is no window manager inside the container, so Factorio's window stays wherever SDL
-# created it (usually 0,0 with a size smaller than the screen). Put it on the whole screen as
-# soon as it shows up; xdotool is part of the base image.
+# There is no window manager inside the container, so Factorio's own window may stay where SDL
+# created it. Put it on the whole screen as soon as it shows up - but ONLY that window: an
+# earlier version grabbed "any visible window" and moved/resized one of the X server's own
+# windows, which broke mouse input.
 if command -v xdotool >/dev/null 2>&1; then
   (
-    wid=""
-    i=0
-    while [ "$i" -lt 120 ]; do
-      i=$((i + 1))
-      wid=$(xdotool search --onlyvisible --classname factorio 2>/dev/null | head -1)
-      [ -z "$wid" ] && wid=$(xdotool search --onlyvisible --class factorio 2>/dev/null | head -1)
-      [ -z "$wid" ] && wid=$(xdotool search --onlyvisible --name Factorio 2>/dev/null | head -1)
-      [ -z "$wid" ] && wid=$(xdotool search --onlyvisible --name '.*' 2>/dev/null | tail -1)
-      [ -n "$wid" ] && break
+    found=""
+    n=0
+    while [ "$n" -lt 120 ]; do
+      n=$((n + 1))
+      for cand in $(xdotool search --onlyvisible --classname factorio 2>/dev/null) \
+                  $(xdotool search --onlyvisible --class factorio 2>/dev/null) \
+                  $(xdotool search --onlyvisible --name '^Factorio' 2>/dev/null); do
+        geom=$(xdotool getwindowgeometry --shell "$cand" 2>/dev/null) || continue
+        gw=$(echo "$geom" | sed -n 's/^WIDTH=//p')
+        gh=$(echo "$geom" | sed -n 's/^HEIGHT=//p')
+        if [ "${gw:-0}" -ge 320 ] && [ "${gh:-0}" -ge 200 ]; then
+          found="$cand"
+          break
+        fi
+      done
+      [ -n "$found" ] && break
       sleep 0.5
     done
-    if [ -n "$wid" ]; then
-      eval "$(xdotool getdisplaygeometry --shell)"
-      xdotool windowmove "$wid" 0 0 windowsize "$WIDTH" "$HEIGHT" 2>/dev/null
-      echo "window $wid placed at 0,0 ${WIDTH}x${HEIGHT}"
+    if [ -n "$found" ]; then
+      disp=$(xdotool getdisplaygeometry --shell 2>/dev/null)
+      dw=$(echo "$disp" | sed -n 's/^WIDTH=//p')
+      dh=$(echo "$disp" | sed -n 's/^HEIGHT=//p')
+      xdotool windowmove "$found" 0 0 2>/dev/null
+      xdotool windowsize "$found" "${dw:-1744}" "${dh:-853}" 2>/dev/null
+      # no window manager ever gives the game the X input focus, and an unfocused window
+      # gets no keyboard focus events; raise+focus makes SDL consider it active
+      xdotool windowraise "$found" 2>/dev/null
+      xdotool windowfocus --sync "$found" 2>/dev/null
+      echo "window $found placed at 0,0 ${dw}x${dh}, focused"
     fi
   ) &
 fi

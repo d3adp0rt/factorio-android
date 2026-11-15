@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.1
+
+* **Mouse input fixed.** Without a window manager the game window never gets the X input focus,
+  and SDL silently drops clicks and the wheel in an unfocused window. `run.sh` now raises and
+  focuses the game window, and the game runs with `SDL_MOUSE_FOCUS_CLICKTHROUGH=1`.
+* The window placement no longer touches "any visible window" - an earlier build grabbed one of
+  the X server's own windows and moved it, which could break input. Only a real Factorio window
+  (checked by class/name and a size sanity check) is ever resized.
+* The X server state is now verified against its socket: if the `:x11` process died, the
+  launcher notices and starts a fresh one on the next Play instead of thinking it is running.
+* Pointer ids in the touchpad events re-dispatched by the on-screen pad are renumbered, so the
+  gesture detectors see a normal gesture.
+
 ## 0.5.0
 
 * **Stable signing key.** CI used a throwaway debug keystore, so every GitHub build had a
